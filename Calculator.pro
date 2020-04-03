@@ -28,7 +28,8 @@ HEADERS += \
     mainwindow.h \
     operation.h \
     operationfactory.h \
-    operationwithindex.h
+    operationwithindex.h \
+    operatordetecting.h
 
 FORMS +=
 

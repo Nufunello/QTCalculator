@@ -2,6 +2,7 @@
 #define OPERATION_H
 
 #include <functional>
+#include <string>
 
 namespace Operations {
     class Operation

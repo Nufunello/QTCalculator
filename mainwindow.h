@@ -18,7 +18,5 @@ private:
     QLineEdit            txtExpression_;
     QLineEdit            txtCalculation_;
 
-    ExpressionCalculator calculator_;
-
 };
 #endif // MAINWINDOW_H

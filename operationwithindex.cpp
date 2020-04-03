@@ -3,6 +3,9 @@
 
 void Operations::transformToRelativeIndexes(std::vector<OperationWithIndex> &operationsWithIndexes)
 {
+    if (operationsWithIndexes.empty())
+        return;
+
     for (size_t i = 0; i < operationsWithIndexes.size() - 1; ++i)
     {
         const size_t& outerIndex = operationsWithIndexes[i].Index;

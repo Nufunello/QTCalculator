@@ -1,66 +1,91 @@
 #include "expressioncalculator.h"
 #include "operationfactory.h"
 #include "operationwithindex.h"
+#include "operatordetecting.h"
 
 #include <vector>
-#include <string>
 #include <algorithm>
 
 using namespace Operations;
 
 inline double getNumberFromSubstring(const std::string& str, int index, int count)
 {
-    auto numberStr = str.substr(index, count);
-    return stod(numberStr);
+    return stod(str.substr(index, count));
 }
 
-std::tuple<std::vector<OperationWithIndex>, std::vector<double>> getOperationsWithIndexesAndNumbersFromString(std::string str)
+void moveIndexerToInnerExpressionEnd(const std::string& str, size_t& indexer)
 {
-    std::vector<double> numbers;
-    std::vector<OperationWithIndex> operationsWithIndexes;
+    size_t cLeftBrackerNotClosed = 1;
+    for (; cLeftBrackerNotClosed != 0; ++indexer)
+    {
+        const char& symbol = str[indexer];
 
+        switch (symbol) {
+            case INNER_EXPRESION_START:
+                ++cLeftBrackerNotClosed;
+                break;
+
+            case INNER_EXPRESION_END:
+                --cLeftBrackerNotClosed;
+                break;
+        }
+    }
+}
+
+void transformInnerBracketExpression(std::string& str, size_t startInnerExpressionIndex)
+{
+    size_t endInnerExpresionIndex = startInnerExpressionIndex + 1;
+    moveIndexerToInnerExpressionEnd(str, endInnerExpresionIndex);
+
+    size_t startPos = startInnerExpressionIndex + 1;
+    std::string innerExpressionStr = str.substr(startPos, endInnerExpresionIndex - startPos - 1);
+
+    double value = CalculateExpression(std::move(innerExpressionStr));
+
+    std::string calculatedStr = std::to_string(value);
+
+    if (isdigit(str[startInnerExpressionIndex - 1]))
+    {
+        str[startInnerExpressionIndex++] = DEFAULT_BRACKET_OPERATOR;
+    }
+
+    str.replace(str.begin() + startInnerExpressionIndex, str.begin() + endInnerExpresionIndex, calculatedStr.begin(), calculatedStr.end());
+}
+
+void skipUnaryOperation(const std::string& str, size_t& indexer)
+{
+    if (isUnaryOperator(str[indexer]))
+    {
+        auto lastDigitPos = std::find_if(str.begin() + 1, str.end(), [](const char& symbol){
+            return isOperator(symbol);
+        });
+
+        auto count = std::distance(str.begin(), lastDigitPos);
+        indexer += count;
+    }
+}
+
+void setOperationsWithIndexesAndNumbersFromString(std::string str, std::vector<OperationWithIndex>& operationsWithIndexes, std::vector<double>& numbers)
+{
     int operationRelativeIndex = 0;
     size_t prevIndex = 0, currentIndex = 0;
+
+    skipUnaryOperation(str, currentIndex);
+
     for (; currentIndex < str.size(); ++currentIndex)
     {
         const auto& symbol = str[currentIndex];
 
-        if (!isdigit(symbol))
-        {
-            if (symbol == '(')
-            {
-                size_t cLeftBrackerNotClosed = 1;
-                size_t leftBracketIndexer = currentIndex + 1;
+        switch (symbol) {
+            case FLOAT_SEPARATOR:
+                continue;
 
-                for (; cLeftBrackerNotClosed != 0; ++leftBracketIndexer)
-                {
-                    switch (str[leftBracketIndexer]) {
-                    case ')':
-                        --cLeftBrackerNotClosed;
-                        break;
+            case INNER_EXPRESION_START:
+                transformInnerBracketExpression(str, currentIndex--);
+                break;
 
-                    case '(':
-                        ++cLeftBrackerNotClosed;
-                        break;
-                    }
-                }
-
-                ExpressionCalculator calculator;
-                size_t startPos = currentIndex + 1;
-                std::string innerExpression = str.substr(startPos, leftBracketIndexer - startPos - 1);
-                double value = calculator.CalculateExpression(std::move(innerExpression));
-                std::string calculatedStr = std::to_string(value);
-                str.replace(str.begin() + currentIndex + 1, str.begin() + leftBracketIndexer, calculatedStr.begin(), calculatedStr.end());
-
-                if (isdigit(str[currentIndex - 1]))
-                {
-                    str[currentIndex] = '*';
-                    --currentIndex;
-                }
-            }
-            else
-            {
-                if (symbol != '.')
+            default:
+                if (!isdigit(symbol))
                 {
                     operationsWithIndexes.emplace_back(OperationFactory::CreateOperation(symbol), operationRelativeIndex++);
 
@@ -68,7 +93,8 @@ std::tuple<std::vector<OperationWithIndex>, std::vector<double>> getOperationsWi
                     numbers.emplace_back(getNumberFromSubstring(str, prevIndex, count));
                     prevIndex = currentIndex + 1;
                 }
-            }
+
+                break;
         }
     }
 
@@ -76,8 +102,6 @@ std::tuple<std::vector<OperationWithIndex>, std::vector<double>> getOperationsWi
 
     size_t count = currentIndex - prevIndex + 1;
     numbers.emplace_back(getNumberFromSubstring(str, prevIndex, count));
-
-    return std::make_tuple<>(operationsWithIndexes, numbers);
 }
 
 double calculateOperationsWithNumbers(std::vector<OperationWithIndex> operations, std::vector<double> numbers)
@@ -96,8 +120,17 @@ double calculateOperationsWithNumbers(std::vector<OperationWithIndex> operations
     return numbers.front();
 }
 
-double ExpressionCalculator::CalculateExpression(std::string expression)
+double CalculateExpression(std::string expression)
 {
-    auto operationsAndNumbers = getOperationsWithIndexesAndNumbersFromString(std::move(expression));
-    return calculateOperationsWithNumbers(std::move(std::get<0>(operationsAndNumbers)), std::move(std::get<1>(operationsAndNumbers)));
+    size_t cOperations = std::count_if(expression.begin(), expression.end(), [](const char& symbol){ return isOperator(symbol); });
+
+    std::vector<OperationWithIndex> operationsWithIndexes;
+    operationsWithIndexes.reserve(cOperations);
+
+    std::vector<double> numbers;
+    numbers.reserve(cOperations + 1);
+
+    setOperationsWithIndexesAndNumbersFromString(std::move(expression), operationsWithIndexes, numbers);
+
+    return calculateOperationsWithNumbers(std::move(operationsWithIndexes), std::move(numbers));
 }

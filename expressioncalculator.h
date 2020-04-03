@@ -3,14 +3,6 @@
 
 #include <string>
 
-class ExpressionCalculator
-{
-public:
-    ExpressionCalculator() = default;
-    double CalculateExpression(std::string expression);
-
-private:
-
-};
+double CalculateExpression(std::string expression);
 
 #endif // EXPRESSIONCALCULATOR_H
