@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&txtExpression_, &QLineEdit::returnPressed, [this](){
         std::string expression = txtExpression_.text().toStdString();
 
-        double expressionCalculationResult = calculator_.CalculateExpression(expression);
+        double expressionCalculationResult = calculator_.CalculateExpression(std::move(expression));
 
         txtCalculation_.setText(QString::number(expressionCalculationResult));
     });

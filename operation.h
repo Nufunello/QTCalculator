@@ -19,13 +19,13 @@ namespace Operations {
     private:
 
         friend class OperationFactory;
-        friend bool operator<(const Operation& lhs, const Operation& rhs);
+        friend bool operator>(const Operation& lhs, const Operation& rhs);
         friend bool operator==(const Operation& lhs, const Operation& rhs);
     };
 
-    inline bool operator<(const Operation& lhs, const Operation& rhs)
+    inline bool operator>(const Operation& lhs, const Operation& rhs)
     {
-        return lhs.priority_ < rhs.priority_;
+        return lhs.priority_ > rhs.priority_;
     }
 
     inline bool operator==(const Operation& lhs, const Operation& rhs)

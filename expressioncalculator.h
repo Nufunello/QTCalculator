@@ -7,7 +7,7 @@ class ExpressionCalculator
 {
 public:
     ExpressionCalculator() = default;
-    double CalculateExpression(const std::string& expression);
+    double CalculateExpression(std::string expression);
 
 private:
 

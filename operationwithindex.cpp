@@ -17,6 +17,10 @@ void Operations::transformToRelativeIndexes(std::vector<OperationWithIndex> &ope
                 {
                     innerIndex -= counter++;
                 }
+                else
+                {
+                    innerIndex = 0;
+                }
             }
         }
     }
@@ -24,11 +28,11 @@ void Operations::transformToRelativeIndexes(std::vector<OperationWithIndex> &ope
 
 void Operations::transformOperationsWithIndexes(std::vector<OperationWithIndex> &operationsWithIndexes)
 {
-    std::make_heap(operationsWithIndexes.begin(), operationsWithIndexes.end(), [](const auto& lhs, const auto& rhs){
-        return lhs.Operation < rhs.Operation;
+    std::sort(operationsWithIndexes.begin(), operationsWithIndexes.end(), [](const auto& lhs, const auto& rhs){
+        return lhs.Operation > rhs.Operation;
     });
     std::sort(operationsWithIndexes.begin(), operationsWithIndexes.end(), [](const auto& lhs, const auto& rhs){
-        return lhs.Operation == rhs.Operation ? lhs.Index > rhs.Index : false;
+        return lhs.Operation == rhs.Operation ? lhs.Index < rhs.Index : false;
     });
 
     Operations::transformToRelativeIndexes(operationsWithIndexes);
