@@ -1,8 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "expressioncalculator.h"
-
+#include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
 
@@ -15,8 +14,9 @@ public:
     ~MainWindow();
 
 private:
-    QLineEdit            txtExpression_;
-    QLineEdit            txtCalculation_;
+    QLineEdit txtExpression_;
+    QLineEdit txtCalculation_;
+    QLabel    lblErrors_;
 
 };
 #endif // MAINWINDOW_H

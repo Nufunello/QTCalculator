@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     expressioncalculator.cpp \
+    expressionvalidator.cpp \
     main.cpp \
     mainwindow.cpp \
     operation.cpp \
@@ -24,7 +25,10 @@ SOURCES += \
     operationwithindex.cpp
 
 HEADERS += \
+    adjacentoperatorpairexception.h \
     expressioncalculator.h \
+    expressionvalidator.h \
+    innerexpressioncountexception.h \
     mainwindow.h \
     operation.h \
     operationfactory.h \

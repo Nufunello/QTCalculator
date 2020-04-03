@@ -10,7 +10,8 @@ using namespace Operations;
 
 inline double getNumberFromSubstring(const std::string& str, int index, int count)
 {
-    return stod(str.substr(index, count));
+    std::string substr = str.substr(index, count);
+    return stod(substr);
 }
 
 void moveIndexerToInnerExpressionEnd(const std::string& str, size_t& indexer)
@@ -44,7 +45,7 @@ void transformInnerBracketExpression(std::string& str, size_t startInnerExpressi
 
     std::string calculatedStr = std::to_string(value);
 
-    if (isdigit(str[startInnerExpressionIndex - 1]))
+    if (startInnerExpressionIndex != 0 && isdigit(str[startInnerExpressionIndex - 1]))
     {
         str[startInnerExpressionIndex++] = DEFAULT_BRACKET_OPERATOR;
     }
@@ -81,7 +82,11 @@ void setOperationsWithIndexesAndNumbersFromString(std::string str, std::vector<O
                 continue;
 
             case INNER_EXPRESION_START:
-                transformInnerBracketExpression(str, currentIndex--);
+                transformInnerBracketExpression(str, currentIndex);
+                if (!isUnaryOperator(str[currentIndex]))
+                {
+                    --currentIndex;
+                }
                 break;
 
             default:
@@ -100,7 +105,12 @@ void setOperationsWithIndexesAndNumbersFromString(std::string str, std::vector<O
 
     Operations::transformOperationsWithIndexes(operationsWithIndexes);
 
-    size_t count = currentIndex - prevIndex + 1;
+    const auto& lastSymbol = str[currentIndex];
+    if (isdigit(lastSymbol))
+    {
+        ++currentIndex;
+    }
+    size_t count = currentIndex - prevIndex;
     numbers.emplace_back(getNumberFromSubstring(str, prevIndex, count));
 }
 

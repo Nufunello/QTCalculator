@@ -18,6 +18,16 @@ namespace Operations {
         return symbol == INNER_EXPRESION_START;
     }
 
+    inline bool isInnerExpressionEnd(char symbol)
+    {
+        return symbol == INNER_EXPRESION_END;
+    }
+
+    inline bool isInnerExpressionSymbol(char symbol)
+    {
+        return isInnerExpressionStart(symbol) || isInnerExpressionEnd(symbol);
+    }
+
     inline bool isFloatSeparator(char symbol)
     {
         return symbol == FLOAT_SEPARATOR;
@@ -35,7 +45,7 @@ namespace Operations {
 
     inline bool isOperator(char symbol)
     {
-        return !isdigit(symbol) && !isFloatSeparator(symbol);
+        return !isdigit(symbol) && !isFloatSeparator(symbol) && !isInnerExpressionSymbol(symbol);
     }
 }
 
