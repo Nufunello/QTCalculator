@@ -1,5 +1,7 @@
 #include "operation.h"
 
+using namespace Operations;
+
 double Operation::operator()(const double &lhs, const double &rhs) const
 {
     return operation_(lhs, rhs);

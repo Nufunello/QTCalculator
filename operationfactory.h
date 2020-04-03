@@ -3,11 +3,14 @@
 
 #include "operation.h"
 
-class OperationFactory
-{
-public:
-    static Operation CreateOperation(char operationCharRepresentation);
+namespace Operations {
+    class OperationFactory
+    {
+    public:
+        static Operations::Operation CreateOperation(char operationCharRepresentation);
 
-};
+    };
+}
+
 
 #endif // OPERATIONFACTORY_H

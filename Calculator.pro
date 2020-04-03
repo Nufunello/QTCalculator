@@ -20,13 +20,15 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     operation.cpp \
-    operationfactory.cpp
+    operationfactory.cpp \
+    operationwithindex.cpp
 
 HEADERS += \
     expressioncalculator.h \
     mainwindow.h \
     operation.h \
-    operationfactory.h
+    operationfactory.h \
+    operationwithindex.h
 
 FORMS +=
 
