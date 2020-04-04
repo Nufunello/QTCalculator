@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         try
         {
+            lblErrors_.clear();
             ValidateExpression(expression);
 
             double expressionCalculationResult = CalculateExpression(std::move(expression));
